@@ -67,7 +67,7 @@ require_once ('db.php');
                 </div>
                 <div class="modal-body">
                     <form action="checkout.php" method="POST">
-                        <input type="text" name="name" placeholder="Ваше имя" required class="form-control mb-2">
+                        <input type="text" name="name" placeholder="Ваше ФИО" required class="form-control mb-2">
                         <input type="email" name="email" placeholder="Ваш email" required class="form-control mb-2">
                         <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
                         <button type="submit" class="btn btn-primary">Оформить заказ</button>    

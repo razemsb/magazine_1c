@@ -26,24 +26,46 @@ $products = $conn->query($products_query);
 </head>
 <body>
 <header class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand" href="main.php">«ИнфоСофт»</a>
-        <a class="navbar-brand" href="about.html">О нас</a>
+  <div class="container">
+    <a class="navbar-brand" href="main.php">«ИнфоСофт»</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Переключение навигации">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="main.php">Главная</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="about.html">О нас</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="productsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Продукты
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="productsDropdown">
+            <?php while($category = $categories->fetch_assoc()): ?>
+              <li><a class="dropdown-item" href="main.php?category=<?php echo urlencode($category['name']); ?>">
+                <?php echo htmlspecialchars($category['name']); ?></a></li>
+            <?php endwhile; ?>
+          </ul>
+        </li>
+      </ul>
+      <div class="d-flex align-items-center">
+        <?php if ($user_login): ?>
+          <span class="user-name"><?= htmlspecialchars($user_login) ?></span>
+          <a href="session_destroy.php" class="btn logout-btn">Выйти</a>
+          <?php if ($is_admin): ?>
+            <a href="admin.php" class="btn admin-btn ms-2">Админ</a>
+          <?php endif; ?>
+        <?php else: ?>
+          <a href="#" class="btn register-btn ms-2" id="openModal">Вход/Регистрация</a>
+        <?php endif; ?>
+        <a href="buylist.php" class="btn btn-primary ms-2">Корзина</a>
+        </div>
     </div>
-    <div class="right-element">
-    <?php if ($user_login): ?>
-                <span class="user-name"><?= htmlspecialchars($user_login) ?></span>
-                <a href="session_destroy.php" class="btn logout-btn">Выйти</a>
-                <?php if ($is_admin): ?>
-                    <a href="admin.php" class="btn admin-btn">Админ</a>
-                <?php endif; ?>
-            <?php else: ?>
-                <a href="index.html" class="btn register-btn">Регистрация/Авторизация</a>
-            <?php endif; ?>
-        <a href="buylist.php" class="btn btn-primary">Корзина</a>
-    </div>
+  </div>
 </header>
-
     <div class="container mt-4">
         <div class="row">
             <div class="col-md-3">
@@ -86,9 +108,46 @@ $products = $conn->query($products_query);
         </div>
     </div>    
   
+<div id="modal" class="modal">
+   <div class="cont">
+    <form id="form1" class="auth_form" action="auth.php" method="post">
+        <strong class="strong">Авторизация<span class="close">&times;</span></strong><br>
+        <input type="text" name="name" placeholder="Ваш никнейм" required><br>
+        <input type="password" name="pass" placeholder="Ваш Пароль" required><br>
+        <p class="text">Нет аккаунта? <a href="#" id="switchToRegister">Регистрация</a></p><br>
+        <input type="submit" value="Войти">
+    </form>
 
+    <form id="form2" class="auth_form hidden" action="reg.php" method="post">
+        <strong class="strong">Регистрация<span class="close">&times;</span></strong><br>
+        <input type="text" name="name" placeholder="Ваш никнейм" required><br>
+        <input type="password" name="pass" placeholder="Ваш Пароль" required><br>
+        <input type="password" name="repeatpass" placeholder="Повторите ваш Пароль" required><br>
+        <input type="email" name="email" placeholder="Почта" required><br>
+        <p class="text">Уже зарегистрированы? <a href="#" id="switchToLogin">Вход в аккаунт</a></p><br>
+        <input type="submit" value="Зарегистрироваться">
+    </form>
+        </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="script/script.js"></script>
+<script src="script/authlog.js"></script>
+
+<div id="productModal" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle"></h5>
+        <button type="button" class="close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
