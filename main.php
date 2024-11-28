@@ -5,12 +5,13 @@ $is_admin = isset($_SESSION['is_admin']) ? $_SESSION['is_admin'] : false;
 
 require_once 'db.php';
 
-$categories = $conn->query("SELECT * FROM categories ORDER BY name");
-$products_query = "SELECT * FROM products";
-if (isset($_GET['category'])) {
+$categories = $conn->query("SELECT * FROM categories WHERE is_active = 'active' ORDER BY name");
+$products_query = "SELECT * FROM products WHERE is_active = 'active'";
+if (isset($_GET['category']) && !empty($_GET['category'])) {
     $category = $conn->real_escape_string($_GET['category']);
-    $products_query .= " WHERE category = '$category'";
+    $products_query .= " AND category = '$category'";
 }
+
 $products = $conn->query($products_query);
 ?>
 
@@ -22,6 +23,7 @@ $products = $conn->query($products_query);
     <link rel="shortcut icon" href="icons/logotype.png" type="image/x-icon">
     <title>Магазин программ 1С</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/signin.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -56,7 +58,7 @@ $products = $conn->query($products_query);
           <span class="user-name"><?= htmlspecialchars($user_login) ?></span>
           <a href="session_destroy.php" class="btn logout-btn">Выйти</a>
           <?php if ($is_admin): ?>
-            <a href="admin.php" class="btn admin-btn ms-2">Админ</a>
+            <a href="admin.php?section=none" class="btn admin-btn ms-2">Админ</a>
           <?php endif; ?>
         <?php else: ?>
           <a href="#" class="btn register-btn ms-2" id="openModal">Вход/Регистрация</a>
@@ -78,7 +80,6 @@ $products = $conn->query($products_query);
                     <?php endwhile; ?>
                 </div>
             </div>
-            
             <div class="col-md-9">
                 <div class="row">
                     <?php while($product = $products->fetch_assoc()): ?>
@@ -93,13 +94,22 @@ $products = $conn->query($products_query);
                                     <p class="card-text"><?php echo htmlspecialchars(substr($product['description'], 0, 100)) . '...'; ?></p>
                                     <p class="card-text"><strong>Версия:</strong> <?php echo htmlspecialchars($product['version']); ?></p>
                                     <p class="card-text"><strong>Цена:</strong> <?php echo number_format($product['price'], 2); ?> ₽</p>
+                                    <p class="card-text"><strong>Количество:</strong> <?php echo $product['quantity']; ?></p>
                                     <p class="card-text"><strong>Категория:</strong> <?php echo htmlspecialchars($product['category']); ?></p>   
                                 </div>
                                 <button type="button" class="btn btn-primary" onclick="OpenModal(<?php echo $product['id']; ?>)">Подробнее</button>
+                                <?php if($user_login): ?>
+                                <?php if($product['quantity'] > 0 && $product['is_active'] == 'active'): ?>
                                 <form action="add_to_cart.php" method="POST">
                                         <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
                                         <button type="submit" class="btn btn-success mt-1">В корзину</button>
                                     </form>    
+                                <?php else: ?>
+                                        <button type="button" class="btn btn-danger mt-1">Товар закончился</button>
+                                <?php endif; ?>
+                                <?php else: ?>
+                                <button class="btn-account mt-1" id="openModal">Для покупки войдите в аккаунт</button>
+                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endwhile; ?>
@@ -111,7 +121,7 @@ $products = $conn->query($products_query);
 <div id="modal" class="modal">
    <div class="cont">
     <form id="form1" class="auth_form" action="auth.php" method="post">
-        <strong class="strong">Авторизация<span class="close">&times;</span></strong><br>
+        <strong class="strong">Авторизация<span class="close" onclick="closeModal();">&times;</span></strong><br>
         <input type="text" name="name" placeholder="Ваш никнейм" required><br>
         <input type="password" name="pass" placeholder="Ваш Пароль" required><br>
         <p class="text">Нет аккаунта? <a href="#" id="switchToRegister">Регистрация</a></p><br>
@@ -119,7 +129,7 @@ $products = $conn->query($products_query);
     </form>
 
     <form id="form2" class="auth_form hidden" action="reg.php" method="post">
-        <strong class="strong">Регистрация<span class="close">&times;</span></strong><br>
+        <strong class="strong">Регистрация<span class="close" onclick="closeModal();">&times;</span></strong><br>
         <input type="text" name="name" placeholder="Ваш никнейм" required><br>
         <input type="password" name="pass" placeholder="Ваш Пароль" required><br>
         <input type="password" name="repeatpass" placeholder="Повторите ваш Пароль" required><br>

@@ -18,7 +18,7 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== 1) {
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="index.php">1С Магазин</a>
+        <a class="navbar-brand" href="admin.php?section=none">1С Магазин</a>
     </div>
 </nav>
     <h1>Добавить товар</h1>

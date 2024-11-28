@@ -12,22 +12,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Ошибка подключения: " . $conn->connect_error);
     }
 
-    $stmt = $conn->prepare("SELECT Password, is_admin FROM users WHERE Login = ?");
+    $stmt = $conn->prepare("SELECT ID,Password, is_admin, is_active FROM users WHERE Login = ?");
     $stmt->bind_param("s", $name);
     $stmt->execute();
-    $stmt->bind_result($hashed_pass, $isAdmin);
+    $stmt->bind_result($id, $hashed_pass, $isAdmin, $isActive);
     $stmt->fetch();
     $stmt->close();
-
+    if($isActive == 'no_active') {
+        echo "<script>alert('Ваш аккаунт заблокирован'); window.location.href = 'main.php';</script>";
+        exit();
+    }else {
     if (password_verify($pass, $hashed_pass)) {
+        $_SESSION['user_id'] = $id;
         $_SESSION['user_login'] = $name;
         $_SESSION['is_admin'] = $isAdmin;
 
         echo "<script>alert('Успешная авторизация'); window.location.href = 'main.php';</script>";
     } else {
-        echo "<script>alert('Неверный логин или пароль'); window.location.href = 'index.html';</script>";
+        echo "<script>alert('Неверный логин или пароль'); window.location.href = 'main.php';</script>";
     }
 
     $conn->close();
+}
 }
 ?>

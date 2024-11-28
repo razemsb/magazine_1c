@@ -34,11 +34,11 @@ require_once ('db.php');
                 <?php foreach($_SESSION['cart'] as $product_id => $quantity): ?>
                     <?php
                         $product = $conn->query("SELECT * FROM products WHERE id = '$product_id'")->fetch_assoc();
-                        $total_price = $product['price'] * $quantity;               
+                        $total_price = $product['price'] * $quantity;
                     ?>
                     <tr>
                         <td><?= $product['title'] ?></td>
-                        <td><?= $quantity ?></td>
+                        <td><input type="number" min="1" max="<?php $max_quantity = $product['quantity']; echo $max_quantity; ?>" value="<?= $quantity ?>" name="quantity"></td>
                         <td><?= $total_price ?></td>
                         <td>
                             <form action="delete_from_cart.php" method="POST">
@@ -66,12 +66,21 @@ require_once ('db.php');
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="checkout.php" method="POST">
-                        <input type="text" name="name" placeholder="Ваше ФИО" required class="form-control mb-2">
-                        <input type="email" name="email" placeholder="Ваш email" required class="form-control mb-2">
-                        <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
-                        <button type="submit" class="btn btn-primary">Оформить заказ</button>    
-                    </form> 
+                <?php
+                $product_ids = array_keys($_SESSION['cart']); 
+                if (count($product_ids) == 1) {
+                    $product_ids_str = $product_ids[0];
+                } else {
+                    $product_ids_str = implode(",", $product_ids); 
+                }
+                ?>
+                <form action="checkout.php" method="POST">
+                    <input type="text" name="name" placeholder="Ваше ФИО" required class="form-control mb-2">
+                    <input type="tel" name="phone" placeholder="Ваш телефон" required class="form-control mb-2">
+                    <input type="email" name="email" placeholder="Ваш email" required class="form-control mb-2">
+                    <input type="hidden" name="product_ids" value="<?= $product_ids_str ?>">
+                    <button type="submit" class="btn btn-primary">Оформить заказ</button>
+                </form>
                </div> 
             </div>
         </div>
