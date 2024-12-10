@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }else {
     if (password_verify($pass, $hashed_pass)) {
+        $_SESSION['user_auth'] = true;
         $_SESSION['user_id'] = $id;
         $_SESSION['user_login'] = $name;
         $_SESSION['is_admin'] = $isAdmin;

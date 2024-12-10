@@ -32,4 +32,9 @@ function OpenModal(productId) {
     document.body.style.overflow = '';
     document.getElementById('productModal').style.display = 'none';
   }
-  
+  setTimeout(function() {
+    document.getElementById('error').style.opacity = '0';
+    setTimeout(function() {
+        document.getElementById('error').remove();
+    }, 500);
+}, 5000);

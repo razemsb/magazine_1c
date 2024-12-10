@@ -1,7 +1,6 @@
 <?php
 session_start();
 require_once ('db.php');
-require_once ('functions.php');
 if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== 1) {
     header('Location: main.php');
     exit();
@@ -22,14 +21,14 @@ $section = isset($_GET['section']) ? $_GET['section'] : 'products';
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="main.php">«ИнфоСофт» Админ панель</a>
+            <a class="navbar-brand" href="">«ИнфоСофт» Админ панель</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="main.php">На главную</a>
+                        <a class="nav-link" href="delete_admin_session.php">На главную</a>
                     </li>
                 </ul>
             </div>
@@ -46,6 +45,7 @@ $section = isset($_GET['section']) ? $_GET['section'] : 'products';
                     <li><a class="dropdown-item <?= ($section == 'users') ? 'active' : '' ?>" href="?section=users">Пользователи</a></li>
                     <li><a class="dropdown-item <?= ($section == 'orders') ? 'active' : '' ?>" href="?section=orders">Заказы</a></li>
                     <li><a class="dropdown-item <?= ($section == 'add_products') ? 'active' : '' ?>" href="?section=add_products">История пополнений</a></li>
+                    <li><a class="dropdown-item <?= ($section == 'adds_tovars') ? 'active' : '' ?>" href="?section=adds_tovars">Пополнить товар</a></li>
                     <?php if ($section != 'none'): ?>
                     <li><a class="dropdown-item <?= ($section == 'none') ? 'active' : '' ?>" href="?section=none">Сбросить</a></li>
                     <?php endif; ?>
@@ -58,6 +58,17 @@ $section = isset($_GET['section']) ? $_GET['section'] : 'products';
     </nav>  
 <div class="container mt-4">
     <h1>Админ панель</h1>
+    <?php if($_SESSION['admin_auth_password'] == False) { ?>
+    <p class="text-danger" id="error" style="transition: opacity 0.5s ease-in-out;"><?= $_SESSION['error'] ?? '' ?></p>
+    <div class="d-flex justify-content-center">
+        <h2>Введите пароль администратора</h2>
+    </div>
+    <form action="admin_auth.php" method="POST" class="d-flex justify-content-center">
+        <input type="password" name="admin_password" placeholder="Пароль администратора" required><br>
+        <input type="hidden" name="user_id" value="<?= $_SESSION['user_id'] ?>">
+        <button type="submit" class="btn btn-primary">Вход</button>
+    </form>
+    <?php }else { ?>
     <?php if ($section == 'products'): ?>
     <?php
     $limit = 5;
@@ -355,9 +366,45 @@ $ordersPagination = getPaginatedData($conn, 'orders', $limit, $page);
                 </tr>
             </tbody>
         </table>
+    <?php elseif($section == 'adds_tovars'): ?>
+    <div class="d-flex justify-content-center">
+        <h2>Пополнить товар</h2>
+    </div>
+    <form action="add_tovar.php" method="POST">
+        <select name="tovar_id" class="form-select mb-3">
+            <option value="" selected>Выберите товар</option>
+            <?php
+                $tovars = $conn->query("SELECT * FROM products");
+                while($tovar = $tovars->fetch_assoc()) {
+                    echo "<option value='" . $tovar['id'] . "'>" . $tovar['title'] . " (Цена: " . $tovar['price'] . ")"; if($tovar['quantity'] == 0) {
+                        echo "<p class='text-danger'> (Нет в наличии)</p>"; 
+                    } else { 
+                        echo "<p style='color: green;'> (В наличии: " . $tovar['quantity'].")</p>"; 
+                    } 
+                    echo "<p class='text-muted'> (ID: " . $tovar['id'] .")  </p>";
+                }
+            ?>
+        </select>
+        <label for="Count" class="form-label">Количество:</label>
+        <input type="number" class="form-control" id="Count" name="Count" min="1" required><br>
+        <label for="user_id" class="form-label">Пользователь:</label>
+        <select name="user_id" class="form-select mb-3">
+            <option value="" selected>Выберите пользователя</option>
+            <?php
+                $users = $conn->query("SELECT * FROM users");
+                while($user = $users->fetch_assoc()) {
+                    echo "<option value='" . $user['ID'] . "'>" . $user['Login']." (ID: ".$user['ID']. ")</option>";
+                }
+            ?>
+        </select>
+        <button type="submit" class="btn btn-primary">Добавить</button>
+    </form>
     <?php endif; ?>
+    <?php } ?>
 </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="script/script.js"></script>
 </body>
 </html>

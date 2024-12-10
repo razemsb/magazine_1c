@@ -14,10 +14,9 @@ if (isset($_POST['name'], $_POST['email'], $_POST['product_ids'], $_POST['phone'
         $stmt->bind_param("issss", $user_id, $name, $phone, $email, $product_ids);
         $stmt->execute();
         $product_ids_array = explode(",", $product_ids);
-        $count_order = count(explode(",", $product_ids));
         foreach ($product_ids_array as $product_id) {
-            $stmt = $conn->prepare("UPDATE products SET quantity = quantity - ? WHERE id = ? AND quantity > 0");
-            $stmt->bind_param("ii", $count_order,$product_id);
+            $stmt = $conn->prepare("UPDATE products SET quantity = quantity - 1 WHERE id = ? AND quantity > 0");
+            $stmt->bind_param("i", $product_id);
             $stmt->execute();
             $product_name = $conn->query("SELECT title FROM products WHERE id = $product_id")->fetch_assoc()['title'];
             if ($stmt->affected_rows == 0) {

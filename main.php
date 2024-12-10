@@ -12,7 +12,20 @@ if (isset($_GET['category']) && !empty($_GET['category'])) {
     $products_query .= " AND category = '$category'";
 }
 
+if (isset($_GET['page']) && is_numeric($_GET['page'])) {
+    $page = $_GET['page'];
+} else {
+    $page = 1;
+}
+
+$limit = 6;
+$offset = ($page - 1) * $limit;
+
+$products_query .= " LIMIT $limit OFFSET $offset";
+
 $products = $conn->query($products_query);
+$num_products = $conn->query("SELECT COUNT(*) FROM products WHERE is_active = 'active'")->fetch_row()[0];
+$num_pages = ceil($num_products / $limit);
 ?>
 
 <!DOCTYPE html>
@@ -74,6 +87,29 @@ $products = $conn->query($products_query);
                 <h4>Категории</h4>
                 <div class="list-group">
                     <a href="main.php" class="list-group-item list-group-item-action">Все продукты</a>
+                    <nav class="pagination mt-4" aria-label="Навигация" class="d-flex justify-content-center">
+        <ul class="pagination justify-content-center">
+            <?php if ($page > 1): ?>
+                <li class="page-item">
+                    <a class="page-link" href="main.php?page=<?php echo $page - 1; ?>" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            <?php endif; ?>
+            <?php for ($i = 1; $i <= $num_pages; $i++): ?>
+                <li class="page-item <?php if ($page == $i) echo 'active'; ?>">
+                    <a class="page-link" href="main.php?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                </li>
+            <?php endfor; ?>
+            <?php if ($page < $num_pages): ?>
+                <li class="page-item">
+                    <a class="page-link" href="main.php?page=<?php echo $page + 1; ?>" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </nav>
                     <?php while($category = $categories->fetch_assoc()): ?>
                         <a href="main.php?category=<?php echo urlencode($category['name']); ?>" class="list-group-item list-group-item-action"> 
                         <?php echo htmlspecialchars($category['name']); ?></a>
@@ -116,7 +152,7 @@ $products = $conn->query($products_query);
                 </div>
             </div>
         </div>
-    </div>    
+    </div>
   
 <div id="modal" class="modal">
    <div class="cont">
@@ -140,6 +176,7 @@ $products = $conn->query($products_query);
         </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="script/script.js"></script>
 <script src="script/authlog.js"></script>

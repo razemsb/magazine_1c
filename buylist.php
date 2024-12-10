@@ -1,6 +1,10 @@
 <?php
 session_start();
 require_once ('db.php');
+if (!isset($_SESSION['user_auth']) == true) {
+    header('Location: main.php');   
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
