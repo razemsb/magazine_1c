@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
 
     if ($pass !== $repeatpass) {
-        echo "<script>alert('Пароли не совпадают'); window.location.href = 'index.html';</script>";
+        echo "<script>alert('Пароли не совпадают'); window.location.href = 'index.php';</script>";
         exit();
     }
 
@@ -27,20 +27,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
 
     if ($count > 0) {
-        echo "<script>alert('Этот логин уже занят. Пожалуйста, выберите другой.'); window.location.href = 'index.html';</script>";
+        echo "<script>alert('Этот логин уже занят. Пожалуйста, выберите другой.'); window.location.href = 'index.php';</script>";
         exit();
     }
 
     $hashed_pass = password_hash($pass, PASSWORD_DEFAULT);
     $is_admin = "0";
-    $stmt = $conn->prepare("INSERT INTO users (Login, Password, Email, is_admin) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("sssi", $name, $hashed_pass, $email, $is_admin);
+    $avatar = "basic_avatar.webp";
+    $stmt = $conn->prepare("INSERT INTO users (Login, Password, Email, avatar, is_admin) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssi", $name, $hashed_pass, $email, $avatar, $is_admin);
 
     if ($stmt->execute()) {
         echo "<script>alert('Успешная регистрация'); window.location.href = 'main.php';</script>";
         $_SESSION['user_login'] = $name;
+        $_SESSION['user_auth'] = true;
     } else {
-        echo "<script>alert('Ошибка при регистрации: " . $conn->errno . "'); window.location.href = 'index.html';</script>";
+        echo "<script>alert('Ошибка при регистрации: " . $conn->errno . "'); window.location.href = 'index.php';</script>";
     }
 
     $stmt->close();

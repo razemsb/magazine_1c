@@ -38,3 +38,18 @@ function OpenModal(productId) {
         document.getElementById('error').remove();
     }, 500);
 }, 5000);
+function searchProducts() {
+  let searchInput = document.getElementById('searchInput');
+  let searchResults = document.getElementById('searchResults');
+
+  let xhr = new XMLHttpRequest();
+  xhr.open('GET', 'search.php?q=' + encodeURIComponent(searchInput.value));
+  xhr.onload = function () {
+      if (xhr.status === 200) {
+          searchResults.innerHTML = xhr.responseText;
+      } else {
+          searchResults.innerHTML = 'Error ' + xhr.status;
+      }
+  };
+  xhr.send();
+}

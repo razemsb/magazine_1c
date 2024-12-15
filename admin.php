@@ -6,7 +6,7 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== 1) {
     exit();
 }
 
-$section = isset($_GET['section']) ? $_GET['section'] : 'products';
+$section = isset($_GET['section']) ? $_GET['section'] : 'none';
 ?>
 <!DOCTYPE html>
 <html lang="en">

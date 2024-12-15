@@ -26,8 +26,13 @@ $products_query .= " LIMIT $limit OFFSET $offset";
 $products = $conn->query($products_query);
 $num_products = $conn->query("SELECT COUNT(*) FROM products WHERE is_active = 'active'")->fetch_row()[0];
 $num_pages = ceil($num_products / $limit);
-?>
 
+$sql = "SELECT * FROM users WHERE Login = '$user_login'";
+$result = $conn->query($sql);
+if ($result->num_rows > 0) {
+    $user = $result->fetch_assoc();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -66,18 +71,29 @@ $num_pages = ceil($num_products / $limit);
           </ul>
         </li>
       </ul>
-      <div class="d-flex align-items-center">
-        <?php if ($user_login): ?>
-          <span class="user-name"><?= htmlspecialchars($user_login) ?></span>
-          <a href="session_destroy.php" class="btn logout-btn">Выйти</a>
-          <?php if ($is_admin): ?>
-            <a href="admin.php?section=none" class="btn admin-btn ms-2">Админ</a>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle mb-auto" style="font-size: 16px;" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <img src="avatars/<?php echo htmlspecialchars($user['avatar']); ?>" alt="Avatar" class="circle-avatar" style="width:50px; height:50px; border-radius: 50%; box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);">
+          <?php if ($user_login): ?>
+            <span class="me-2"><?php echo htmlspecialchars($user_login); ?></span>
+            <span class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-person-circle"></i></span>
+          <?php else: ?>
+            <a class="dropdown-item" href="#" id="openModal">Вход/Регистрация</a>
           <?php endif; ?>
-        <?php else: ?>
-          <a href="#" class="btn register-btn ms-2" id="openModal">Вход/Регистрация</a>
-        <?php endif; ?>
-        <a href="buylist.php" class="btn btn-primary ms-2">Корзина</a>
-        </div>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="userDropdown">
+          <?php if ($user_login): ?>
+            <li><a class="dropdown-item" href="profile.php">Профиль</a></li>
+            <li><a class="dropdown-item" href="session_destroy.php">Выйти</a></li>
+            <?php if ($is_admin): ?>
+              <li><a class="dropdown-item" href="admin.php?section=none">Админ панель</a></li>
+            <?php endif; ?>
+          <?php else: ?>
+            <li><a class="dropdown-item" href="#" id="openModal">Вход/Регистрация</a></li>
+          <?php endif; ?>
+          <li><a class="dropdown-item" href="buylist.php">Корзина</a></li>
+        </ul>
+      </li>
     </div>
   </div>
 </header>
@@ -87,7 +103,7 @@ $num_pages = ceil($num_products / $limit);
                 <h4>Категории</h4>
                 <div class="list-group">
                     <a href="main.php" class="list-group-item list-group-item-action">Все продукты</a>
-                    <nav class="pagination mt-4" aria-label="Навигация" class="d-flex justify-content-center">
+                    <nav class="pagination mt-2" aria-label="Навигация" class="d-flex justify-content-center">
         <ul class="pagination justify-content-center">
             <?php if ($page > 1): ?>
                 <li class="page-item">
@@ -108,8 +124,8 @@ $num_pages = ceil($num_products / $limit);
                     </a>
                 </li>
             <?php endif; ?>
-        </ul>
-    </nav>
+            </ul>
+        </nav>
                     <?php while($category = $categories->fetch_assoc()): ?>
                         <a href="main.php?category=<?php echo urlencode($category['name']); ?>" class="list-group-item list-group-item-action"> 
                         <?php echo htmlspecialchars($category['name']); ?></a>

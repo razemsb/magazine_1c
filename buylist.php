@@ -41,7 +41,9 @@ if (!isset($_SESSION['user_auth']) == true) {
                         $total_price = $product['price'] * $quantity;
                     ?>
                     <tr>
-                        <td><?= $product['title'] ?></td>
+                        <td><?= $product['title'] ?>
+                        <img src="<?= $product['image_path'] ?>" alt="<?= $product['title'] ?>" width="160px" class="ms-1 d-flex" style="margin-left: auto;">
+                        </td>
                         <td><input type="number" min="1" max="<?php $max_quantity = $product['quantity']; echo $max_quantity; ?>" value="<?= $quantity ?>" name="quantity"></td>
                         <td><?= $total_price ?></td>
                         <td>
