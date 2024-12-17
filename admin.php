@@ -1,12 +1,17 @@
 <?php
 session_start();
 require_once ('db.php');
-if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== 1) {
+require_once('functions.php');
+
+if (!$_SESSION['admin_auth']) {
     header('Location: main.php');
     exit();
 }
 
 $section = isset($_GET['section']) ? $_GET['section'] : 'none';
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,60 +20,48 @@ $section = isset($_GET['section']) ? $_GET['section'] : 'none';
     <link rel="shortcut icon" href="icons/logotype.png" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <title>Админ панель</title>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="">«ИнфоСофт» Админ панель</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="delete_admin_session.php">На главную</a>
-                    </li>
-                </ul>
-            </div>
+    <div class="container">
+        <a class="navbar-brand" href="">«ИнфоСофт» Админ панель</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="delete_admin_session.php">На главную</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Выбор категории
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item <?= ($section == 'products') ? 'active' : '' ?>" href="?section=products">Товары</a></li>
+                        <li><a class="dropdown-item <?= ($section == 'categories') ? 'active' : '' ?>" href="?section=categories">Категории</a></li>
+                        <li><a class="dropdown-item <?= ($section == 'users') ? 'active' : '' ?>" href="?section=users">Пользователи</a></li>
+                        <li><a class="dropdown-item <?= ($section == 'orders') ? 'active' : '' ?>" href="?section=orders">Заказы</a></li>
+                        <li><a class="dropdown-item <?= ($section == 'add_products') ? 'active' : '' ?>" href="?section=add_products">История пополнений</a></li>
+                        <li><a class="dropdown-item <?= ($section == 'adds_tovars') ? 'active' : '' ?>" href="?section=adds_tovars">Пополнить товар</a></li>
+                        <?php if ($section != 'none'): ?>
+                            <li><a class="dropdown-item <?= ($section == 'none') ? 'active' : '' ?>" href="?section=none">Сбросить</a></li>
+                        <?php endif; ?>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="add_product.php">Добавить товар</a></li>
+                    </ul>
+                </li>
+            </ul>
         </div>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Выбор категории
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item <?= ($section == 'products') ? 'active' : '' ?>" href="?section=products">Товары</a></li>
-                    <li><a class="dropdown-item <?= ($section == 'categories') ? 'active' : '' ?>" href="?section=categories">Категории</a></li>
-                    <li><a class="dropdown-item <?= ($section == 'users') ? 'active' : '' ?>" href="?section=users">Пользователи</a></li>
-                    <li><a class="dropdown-item <?= ($section == 'orders') ? 'active' : '' ?>" href="?section=orders">Заказы</a></li>
-                    <li><a class="dropdown-item <?= ($section == 'add_products') ? 'active' : '' ?>" href="?section=add_products">История пополнений</a></li>
-                    <li><a class="dropdown-item <?= ($section == 'adds_tovars') ? 'active' : '' ?>" href="?section=adds_tovars">Пополнить товар</a></li>
-                    <?php if ($section != 'none'): ?>
-                    <li><a class="dropdown-item <?= ($section == 'none') ? 'active' : '' ?>" href="?section=none">Сбросить</a></li>
-                    <?php endif; ?>
-                    <li><a class="dropdown-item" href="add_product.php">Добавить товар</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+    </div>
+</nav>
 
-    </nav>  
 <div class="container mt-4">
     <h1>Админ панель</h1>
-    <?php if($_SESSION['admin_auth_password'] == False) { ?>
-    <p class="text-danger" id="error" style="transition: opacity 0.5s ease-in-out;"><?= $_SESSION['error'] ?? '' ?></p>
-    <div class="d-flex justify-content-center">
-        <h2>Введите пароль администратора</h2>
-    </div>
-    <form action="admin_auth.php" method="POST" class="d-flex justify-content-center">
-        <input type="password" name="admin_password" placeholder="Пароль администратора" required><br>
-        <input type="hidden" name="user_id" value="<?= $_SESSION['user_id'] ?>">
-        <button type="submit" class="btn btn-primary">Вход</button>
-    </form>
-    <?php }else { ?>
     <?php if ($section == 'products'): ?>
     <?php
     $limit = 5;
@@ -141,7 +134,7 @@ $section = isset($_GET['section']) ? $_GET['section'] : 'none';
 <?php
 $limit = 5;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$userPagination = getPaginatedData($conn, 'users', $limit, $page);
+$userPagination = getPaginatedData($conn,'users', $limit, $page);
 ?>
 <table class="table">
     <thead>
@@ -160,7 +153,7 @@ $userPagination = getPaginatedData($conn, 'users', $limit, $page);
                 <td><?= $user['ID'] ?></td>
                 <td><?= htmlspecialchars($user['Login']) ?></td>
                 <td><?= htmlspecialchars($user['Email']) ?></td>
-                <td><?= $user['is_admin'] ? 'Администратор' : 'Пользователь' ?></td>
+                <td><?= $user['is_admin'] ? '<p class="text-danger fw-bold">Администратор</p>' : '<p class="text-success fw-bold">Пользователь</p>' ?></td>
                 <td>
                     <?php if ($user['is_active'] == 'active'): ?>
                         <p class="text-success">Активен</p>
@@ -320,7 +313,12 @@ $ordersPagination = getPaginatedData($conn, 'orders', $limit, $page);
                 <tr>
                     <td><?= $order['ID'] ?></td>
                     <td><?= $order['tovar_id'] ?></td>
-                    <td><?= $conn->query("SELECT title FROM products WHERE id = '$order[tovar_id]'")->fetch_assoc()['title'] ?></td>
+                    <td style="display: flex; align-items: center;">
+                        <?php 
+                            $product = $conn->query("SELECT title, image_path FROM products WHERE id = '$order[tovar_id]'")->fetch_assoc();
+                            echo $product['title'].'<img src="'.$product['image_path'].'" width="100" style="margin-left: auto;">';
+                        ?>
+                    </td>
                     <td><?= $order['Count'] ?></td>
                     <td><?= $username." (ID: ".$order['user_id'].")" ?></td>
                     <td><?= $order['date'] ?></td>
@@ -400,10 +398,9 @@ $ordersPagination = getPaginatedData($conn, 'orders', $limit, $page);
         <button type="submit" class="btn btn-primary">Добавить</button>
     </form>
     <?php endif; ?>
-    <?php } ?>
 </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="script/script.js"></script>
 </body>

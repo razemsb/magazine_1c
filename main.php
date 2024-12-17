@@ -73,12 +73,14 @@ if ($result->num_rows > 0) {
       </ul>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle mb-auto" style="font-size: 16px;" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <?php if($_SESSION['user_auth'] == true): ?>
           <img src="avatars/<?php echo htmlspecialchars($user['avatar']); ?>" alt="Avatar" class="circle-avatar" style="width:50px; height:50px; border-radius: 50%; box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);">
-          <?php if ($user_login): ?>
+          <?php endif; ?>
+          <?php if ($_SESSION['user_auth'] == true): ?>
             <span class="me-2"><?php echo htmlspecialchars($user_login); ?></span>
             <span class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-person-circle"></i></span>
           <?php else: ?>
-            <a class="dropdown-item" href="#" id="openModal">Вход/Регистрация</a>
+            
           <?php endif; ?>
         </a>
         <ul class="dropdown-menu" aria-labelledby="userDropdown">
@@ -86,7 +88,7 @@ if ($result->num_rows > 0) {
             <li><a class="dropdown-item" href="profile.php">Профиль</a></li>
             <li><a class="dropdown-item" href="session_destroy.php">Выйти</a></li>
             <?php if ($is_admin): ?>
-              <li><a class="dropdown-item" href="admin.php?section=none">Админ панель</a></li>
+              <li><a class="dropdown-item" href="admin.php">Админ панель</a></li>
             <?php endif; ?>
           <?php else: ?>
             <li><a class="dropdown-item" href="#" id="openModal">Вход/Регистрация</a></li>

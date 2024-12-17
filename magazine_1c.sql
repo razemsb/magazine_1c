@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost:3306
--- Время создания: Дек 15 2024 г., 22:31
+-- Время создания: Дек 17 2024 г., 14:05
 -- Версия сервера: 5.7.24
 -- Версия PHP: 7.4.1
 
@@ -115,7 +115,8 @@ INSERT INTO `orders` (`id`, `user_id`, `name`, `phone`, `email`, `product_id`, `
 (888, 1, 'Ковалев Максим Сергеевич', '79777066492', 'maxim1xxx363@gmail.com', '2', '2024-12-03 00:54:50'),
 (889, 1, 'razemsb', '79777066492', 'maxim1xxx363@gmail.com', '2', '2024-12-11 02:51:52'),
 (890, 1, 'Ковалев Максим Сергеевич', '79777066492', 'maxim1xxx363@gmail.com', '1', '2024-12-12 11:37:16'),
-(891, 1, 'razemsb', '79777066492', 'maxim1xxx363@gmail.com', '3,1', '2024-12-15 20:02:29');
+(891, 1, 'razemsb', '79777066492', 'maxim1xxx363@gmail.com', '3,1', '2024-12-15 20:02:29'),
+(892, 1, 'razemsb', '79777066492', 'maxim1xxx363@gmail.com', '11', '2024-12-16 10:02:05');
 
 -- --------------------------------------------------------
 
@@ -152,7 +153,7 @@ INSERT INTO `products` (`id`, `title`, `description`, `price`, `image_path`, `ca
 (8, 'Клиентская лицензия на 5 рабочих мест', 'Дополнительные лицензии для пользователей', '21600.00', 'icons/1c_lic.jpg', 'Дополнительные лицензии', '8.3', '0', '2024-11-25 19:17:15', 'active', 42),
 (9, '1С:Документооборот', 'Система электронного документооборота', '36000.00', 'icons/1c_dok.png', 'Отраслевые решения', '2.1.25', '0', '2024-11-25 19:17:15', 'active', 5),
 (10, '1С:Комплексная автоматизация', 'Комплексное решение для автоматизации предприятия', '61700.00', 'icons/1c_auto.jpg', '1С:Предприятие', '2.4.13', '0', '2024-11-25 19:17:15', 'active', 4),
-(11, '1С Битрикс', '1С-Битрикс: Управление сайтом — это система управления контентом (CMS) для создания сайтов, интернет-магазинов и корпоративных порталов. Она разработана совместно компаниями «1С» и «Битрикс» и впервые представлена в 2001 году. Платформа предназначена для бизнес-проектов различного масштаба, обеспечивая широкие возможности для управления контентом, безопасностью и производительностью сайтов', '35000.00', 'icons/1c_bitrix.jpg', 'CMS', '3.3.3', '0', '2024-11-26 15:02:36', 'active', 14),
+(11, '1С Битрикс', '1С-Битрикс: Управление сайтом — это система управления контентом (CMS) для создания сайтов, интернет-магазинов и корпоративных порталов. Она разработана совместно компаниями «1С» и «Битрикс» и впервые представлена в 2001 году. Платформа предназначена для бизнес-проектов различного масштаба, обеспечивая широкие возможности для управления контентом, безопасностью и производительностью сайтов', '35000.00', 'icons/1c_bitrix.jpg', 'CMS', '3.3.3', '0', '2024-11-26 15:02:36', 'active', 13),
 (12, '1С для гостиничного бизнеса', '1С:Гостиница — специализированное программное решение для автоматизации управления гостиничными предприятиями. Оно подходит как для небольших отелей и хостелов, так и для крупных гостиничных комплексов.', '65000.00', 'icons/1c_hotel.png', '1С:Предприятие', '3.3.6', '0', '2024-11-26 17:03:29', 'active', 53),
 (13, '1С:Бухгалтерия государственного учреждения', '1С:Бухгалтерия государственного учреждения 8 — это специализированная программа для бухгалтерского учета в государственных учреждениях. Она предназначена для автоматизации бухгалтерского учета, а также для ведения отчетности и выполнения различных обязательств по налогообложению и госфинансированию.', '19400.00', 'icons/1c_buhgos.png', '1С:Предприятие', '1.3.5', '0', '2024-11-26 17:06:08', 'active', 11),
 (14, '1С:Склад', '1С:Склад — специализированное решение для автоматизации складского учета и логистики, предназначенное для оптимизации процессов управления товарными запасами. Это программное обеспечение помогает предприятиям вести точный учет движения товаров и контролировать складские операции на всех уровнях.', '6000.00', 'icons/1c_sklad.jpeg', '1С:Предприятие', '9.9.0', 'ПРОФ', '2024-11-26 17:11:16', 'active', 40);
@@ -179,12 +180,13 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`ID`, `Login`, `Password`, `Email`, `avatar`, `is_admin`, `is_active`, `date_reg`) VALUES
-(1, 'razemsb', '$2y$10$3ifsrdiGL3RnbvH/KzpOPOQkeB6JEBhw7Q4RUzkw/JRvRjfXyC/X6', 'maxim1xxx363@gmail.com', 'Hero451-icon.jpg', 1, 'active', '2024-12-15 22:10:12'),
-(2, 'zhaba mydak', '$2y$10$8QDbNERWkycA2OQHFKGewOvRGi5diDhmagCe4cmZ1n/KjSqqNPjYy', 'maxim1xxx363@gmail.com', '', 0, 'active', '2024-12-15 21:51:48'),
-(3, 'qwopiguvk', '$2y$10$vnvTeO6Z86AFeUbWu4XRzu7PrISwZA9pq7wrSjMcU9LtuiGQtijyW', 'maxim1xxx363@gmail.com', '', 0, 'active', '2024-12-15 21:51:48'),
-(4, 'raze', '$2y$10$7me/UE/gah0y.mJN6lFxC.AN3oiYxPXzyeMg8Gz2ukXpog9aSxzXe', 'maxim1xxx363@gmail.com', '', 0, 'active', '2024-12-15 21:51:48'),
+(1, 'razemsb', '$2y$10$3ifsrdiGL3RnbvH/KzpOPOQkeB6JEBhw7Q4RUzkw/JRvRjfXyC/X6', 'maxim1xxx363@gmail.com', 'Hero451-icon.jpg', 1, 'active', '2024-10-15 22:10:12'),
+(2, 'zhaba mydak', '$2y$10$8QDbNERWkycA2OQHFKGewOvRGi5diDhmagCe4cmZ1n/KjSqqNPjYy', 'maxim1xxx363@gmail.com', 'basic_avatar.webp', 0, 'active', '2024-12-16 10:09:09'),
+(3, 'qwopiguvk', '$2y$10$vnvTeO6Z86AFeUbWu4XRzu7PrISwZA9pq7wrSjMcU9LtuiGQtijyW', 'maxim1xxx363@gmail.com', 'basic_avatar.webp', 0, 'active', '2024-12-16 10:09:06'),
+(4, 'raze', '$2y$10$7me/UE/gah0y.mJN6lFxC.AN3oiYxPXzyeMg8Gz2ukXpog9aSxzXe', 'maxim1xxx363@gmail.com', 'basic_avatar.webp', 0, 'active', '2024-12-16 10:09:11'),
 (5, '67raze5675765', '$2y$10$gCgvsu1ZpLFZ4NF5cF6dwue7Mj5WPAHTjUAH0dxVR/PNAuIcdoyia', 'maxim1xxx363@gmail.com', 'basic_avatar.webp', 0, 'active', '2024-12-15 22:15:53'),
-(6, 'raze09-9-090', '$2y$10$lyP1/4.dyR3WOtjhGXFvMuDAAVr929MKdo5zqOragLTsTaYTgO3DK', 'ADMIN@gmail.com', 'basic_avatar.webp', 0, 'active', '2024-12-15 22:16:23');
+(6, 'raze09-9-090', '$2y$10$lyP1/4.dyR3WOtjhGXFvMuDAAVr929MKdo5zqOragLTsTaYTgO3DK', 'ADMIN@gmail.com', 'basic_avatar.webp', 0, 'active', '2024-12-15 22:16:23'),
+(7, 'whatthehell', '$2y$10$tAwauk2VhSZ0kpCHa0FEZeN8nRuAfbsPLGmgPn.ZFXrRIMP5zIZG6', '1@gmail.com', '24d75665-45d7-45ee-ac14-20c230881457.jpeg', 1, 'active', '2024-12-17 13:41:02');
 
 --
 -- Индексы сохранённых таблиц
@@ -252,7 +254,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT для таблицы `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=892;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=893;
 
 --
 -- AUTO_INCREMENT для таблицы `products`
@@ -264,7 +266,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

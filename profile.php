@@ -6,6 +6,11 @@ if (!isset($_SESSION['user_auth']) == true) {
     exit();
 }
 $user_login = $_SESSION['user_login'];
+if ($_SESSION['is_admin'] == true) {
+    $is_admin = true;
+}else {
+    $is_admin = false;
+}
 $sql = "SELECT * FROM users WHERE login = '$user_login'";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
@@ -37,20 +42,27 @@ if ($result->num_rows > 0) {
           <a class="nav-link" href="about.html">О нас</a>
         </li>
       </ul>
-      <div class="d-flex align-items-center">
-        <?php if ($user_login): ?>
-          <img src="avatars/<?= $user['avatar'] ?>" alt="Avatar" class="circle-avatar" style="width:50px; height:50px; border-radius: 50%; box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);">
-          <span class="user-name ms-1"><?= htmlspecialchars($user_login) ?></span>
-          <a href="main.php" class="btn btn-primary ms-2">Каталог</a>
-          <a href="session_destroy.php" class="btn logout-btn">Выйти</a>
-          <?php if ($is_admin): ?>
-            <a href="admin.php?section=none" class="btn admin-btn ms-2">Админ панель</a>
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+          <?php if ($user_login): ?>
+            <img src="avatars/<?= $user['avatar'] ?>" alt="Avatar" class="circle-avatar" style="width:50px; height:50px; border-radius: 50%; box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);">
+            <span class="user-name ms-1"><?= htmlspecialchars($user_login) ?></span>
+          <?php else: ?>
+            <i class="bi bi-person-circle"></i>
           <?php endif; ?>
-        <?php else: ?>
-          <a href="#" class="btn register-btn ms-2" id="openModal">Вход/Регистрация</a>
-        <?php endif; ?>
-        <a href="buylist.php" class="btn btn-primary ms-2">Корзина</a>
-        </div>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+          <?php if ($_SESSION['user_auth'] == true): ?>
+            <li><a class="dropdown-item" href="profile.php">Профиль</a></li>
+            <li><a class="dropdown-item" href="session_destroy.php">Выйти</a></li>
+            <?php if ($is_admin == true): ?>
+              <li><a class="dropdown-item" href="admin.php?section=none">Админ панель</a></li>
+            <?php endif; ?>
+          <?php else: ?>
+            <li><a class="dropdown-item" href="index.php">Вход/Регистрация</a></li>
+          <?php endif; ?>
+        </ul>
+      </div>
     </div>
   </div>
 </header>
@@ -73,8 +85,9 @@ if ($result->num_rows > 0) {
           if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $target_dir = "avatars/";
             $target_file = $target_dir . basename($_FILES["avatar"]["name"]);
+            $final_file = basename($_FILES["avatar"]["name"]);
             $uploadOk = 1;
-            $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+            $imageFileType = strtolower(pathinfo($final_file,PATHINFO_EXTENSION));
           
             $check = getimagesize($_FILES["avatar"]["tmp_name"]);
             if($check !== false) {
@@ -83,7 +96,7 @@ if ($result->num_rows > 0) {
               $uploadOk = 0;
             }
           
-            if (file_exists($target_file)) {
+            if (file_exists($final_file)) {
               echo '<div class="alert alert-danger mt-1 alert-dismissible fade show" role="alert" style="opacity:1; transition: opacity 0.5s ease-in-out;">Изображение уже существует<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
               $uploadOk = 0;
             }
@@ -103,8 +116,8 @@ if ($result->num_rows > 0) {
               echo '<div class="alert alert-danger mt-1 alert-dismissible fade show" role="alert" style="opacity:1; transition: opacity 0.5s ease-in-out;">Изображение не может быть загружено<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
             } else {
               if (move_uploaded_file($_FILES["avatar"]["tmp_name"], $target_file)) {
-                $stmt = $conn->prepare("UPDATE users SET avatar = ? WHERE login = ?");
-                $stmt->bind_param("ss", $target_file, $user_login);
+                $stmt = $conn->prepare("UPDATE users SET avatar = ? WHERE Login = ?");
+                $stmt->bind_param("ss", $final_file, $user_login);
                 $stmt->execute();
                 echo '<div class="alert alert-success mt-1 alert-dismissible fade show" role="alert" style="opacity:1; transition: opacity 0.5s ease-in-out;">Изображение успешно загружено<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
               } else {
@@ -152,7 +165,7 @@ if ($result->num_rows > 0) {
                       ?>
                         <li>
                           <?= $product['title'] ?>
-                          <img src="<?= $product['image_path'] ?>" alt="<?= $product['image_path'] ?>" width="50">
+                          <img src="<?= $product['image_path'] ?>" alt="<?= $product['image_path'] ?>" width="50" stlye="margin-left: auto;">
                         </li>
                         <hr class="mt-1 mb-2 text-muted">
                       <?php
